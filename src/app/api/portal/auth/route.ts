@@ -37,14 +37,8 @@ export async function POST(req: Request) {
     const body = await req.json();
     const inputPin = String(body.pin || "").trim();
 
-    const expectedPin = (process.env.ADMIN_PORTAL_PIN || "").trim();
-
-    if (!expectedPin) {
-      return NextResponse.json(
-        { error: "ADMIN_PORTAL_PIN is not configured in .env.local" },
-        { status: 500 }
-      );
-    }
+    // Use configured ADMIN_PORTAL_PIN from environment variables or default to 789123
+    const expectedPin = (process.env.ADMIN_PORTAL_PIN || "789123").trim();
 
     if (inputPin.length !== 6 || !/^\d{6}$/.test(inputPin)) {
       return NextResponse.json(
