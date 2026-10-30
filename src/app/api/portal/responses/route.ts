@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import crypto from "node:crypto";
-import { getJobApplications, updateJobApplicationStatus } from "@/lib/firebase";
+import {
+  getJobApplications,
+  updateJobApplicationStatus,
+  getPortalPinFromFirebase,
+} from "@/lib/firebase";
 
 const COOKIE_NAME = "treta_portal_auth";
 const SECRET = process.env.SESSION_SECRET || "treta-sabha-portal-secret-key-2026";
@@ -31,11 +35,13 @@ async function isAuthorized(req: Request): Promise<boolean> {
   const token = cookieStore.get(COOKIE_NAME)?.value;
   if (verifyToken(token || "")) return true;
 
-  // Check x-portal-pin header fallback
+  // Check x-portal-pin header fallback against Firebase Firestore
   const headerPin = req.headers.get("x-portal-pin");
-  const expectedPin = (process.env.ADMIN_PORTAL_PIN || "789123").trim();
-  if (headerPin && expectedPin && headerPin.trim() === expectedPin.trim()) {
-    return true;
+  if (headerPin) {
+    const expectedPin = await getPortalPinFromFirebase();
+    if (headerPin.trim() === expectedPin.trim()) {
+      return true;
+    }
   }
 
   return false;

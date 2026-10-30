@@ -3,6 +3,8 @@ import {
   getFirestore,
   collection,
   doc,
+  getDoc,
+  setDoc,
   updateDoc,
   addDoc,
   getDocs,
@@ -99,3 +101,32 @@ export async function updateJobApplicationStatus(docId: string, status: string) 
   });
   return true;
 }
+
+/**
+ * Get the 6-digit portal PIN stored in Cloud Firestore (Collection: settings, Doc: portal_security)
+ */
+export async function getPortalPinFromFirebase(): Promise<string> {
+  const docRef = doc(db, "settings", "portal_security");
+  const snap = await getDoc(docRef);
+  if (snap.exists() && snap.data()?.pin) {
+    return String(snap.data().pin).trim();
+  }
+  // Initialize in Firebase if not yet set
+  const initialPin = "789123";
+  await setDoc(docRef, { pin: initialPin, updatedAt: serverTimestamp() }, { merge: true });
+  return initialPin;
+}
+
+/**
+ * Update the 6-digit portal PIN directly in Cloud Firestore
+ */
+export async function updatePortalPinInFirebase(newPin: string): Promise<boolean> {
+  const cleaned = String(newPin || "").trim();
+  if (cleaned.length !== 6 || !/^\d{6}$/.test(cleaned)) {
+    throw new Error("PIN must be exactly 6 digits.");
+  }
+  const docRef = doc(db, "settings", "portal_security");
+  await setDoc(docRef, { pin: cleaned, updatedAt: serverTimestamp() }, { merge: true });
+  return true;
+}
+

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import crypto from "node:crypto";
+import { getPortalPinFromFirebase, updatePortalPinInFirebase } from "@/lib/firebase";
 
 const COOKIE_NAME = "treta_portal_auth";
 const SESSION_DURATION = 60 * 60 * 24; // 24 hours
@@ -30,15 +31,12 @@ function verifyToken(token: string): boolean {
 }
 
 /**
- * Verify 6-digit PIN against ADMIN_PORTAL_PIN in .env.local
+ * Verify 6-digit PIN directly against Cloud Firestore
  */
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const inputPin = String(body.pin || "").trim();
-
-    // Use configured ADMIN_PORTAL_PIN from environment variables or default to 789123
-    const expectedPin = (process.env.ADMIN_PORTAL_PIN || "789123").trim();
 
     if (inputPin.length !== 6 || !/^\d{6}$/.test(inputPin)) {
       return NextResponse.json(
@@ -46,6 +44,9 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
+    // Retrieve security PIN directly from Cloud Firestore (Document: settings/portal_security)
+    const expectedPin = await getPortalPinFromFirebase();
 
     // Secure timing-safe comparison
     const inputBuf = Buffer.from(inputPin);
@@ -85,7 +86,43 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error("Portal PIN verification error:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to verify PIN" },
+      { error: error.message || "Failed to verify PIN with Firebase" },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * Update the 6-digit PIN stored in Cloud Firestore (Requires authenticated session)
+ */
+export async function PUT(req: Request) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get(COOKIE_NAME)?.value;
+    if (!verifyToken(token || "")) {
+      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const newPin = String(body.newPin || "").trim();
+
+    if (newPin.length !== 6 || !/^\d{6}$/.test(newPin)) {
+      return NextResponse.json(
+        { error: "New PIN must be exactly 6 digits." },
+        { status: 400 }
+      );
+    }
+
+    await updatePortalPinInFirebase(newPin);
+
+    return NextResponse.json({
+      success: true,
+      message: `Security PIN updated in Firebase Firestore to ${newPin}.`,
+    });
+  } catch (error: any) {
+    console.error("Portal PIN update error:", error);
+    return NextResponse.json(
+      { error: error.message || "Failed to update PIN in Firebase" },
       { status: 500 }
     );
   }
