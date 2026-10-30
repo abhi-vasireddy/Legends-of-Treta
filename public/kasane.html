@@ -479,6 +479,169 @@ window.open(destination.href, '_blank', 'noopener,noreferrer');
   .kingdom-panel__title{letter-spacing:-1px}
   .kingdom-chapters{display:none}
   .kingdom-strip{height:140px}
+/* ==========================================================================
+   MOBILE-ONLY IMAGE OVERLAP FIXES
+   Applies strictly to mobile screens (max-width: 768px).
+   Desktop/laptop layout and animations remain 100% untouched.
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Prevent images from overflowing their containers horizontally */
+  img {
+    max-width: 100% !important;
+  }
+
+  /* Entrance passage vs fixed header: prevent logo stacking during intro on mobile */
+  .passage-frame:not(.passage-finished) ~ .header .brand img,
+  body:not(.threshold-active) .header .brand img {
+    opacity: 0 !important;
+  }
+
+  /* Hero Section: keep hero poster cleanly framed within container without right bleed or text collision */
+  .hero-frame {
+    overflow: hidden !important;
+  }
+  .hero-city {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    object-fit: cover !important;
+    transform: none !important;
+  }
+  .hero-art {
+    position: absolute !important;
+    width: auto !important;
+    max-width: 62% !important;
+    height: 38% !important;
+    max-height: 290px !important;
+    left: auto !important;
+    right: 4% !important;
+    top: 24% !important;
+    bottom: auto !important;
+    transform: none !important;
+    object-fit: contain !important;
+    object-position: right center !important;
+    margin: 0 !important;
+    z-index: 2 !important;
+  }
+
+  /* World Section: keep landscape artwork inside frame bounds without bleed */
+  .world-frame {
+    overflow: hidden !important;
+  }
+  .world-art {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    transform: none !important;
+  }
+
+  /* Kingdom Panels: keep panel backgrounds strictly within their 100% bounds */
+  .kingdom-panel {
+    overflow: hidden !important;
+  }
+  .kingdom-panel__bg {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    object-fit: cover !important;
+    transform: none !important;
+  }
+
+  /* Kingdom Horizontal Strip: contain strip images within 100% track height */
+  .kingdom-strip {
+    overflow: hidden !important;
+  }
+  .kingdom-strip__img {
+    max-height: 100% !important;
+    width: auto !important;
+    object-fit: cover !important;
+  }
+
+  /* Characters Section: hide inactive character images so they do not overlap active character */
+  .character-panels {
+    overflow: hidden !important;
+  }
+  .character-panel:not(.active) {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  .character-panel.active {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  .character-art-wrap {
+    position: absolute !important;
+    width: 42% !important;
+    max-width: 165px !important;
+    height: 54% !important;
+    max-height: 400px !important;
+    left: 3% !important;
+    right: auto !important;
+    bottom: 15% !important;
+    top: auto !important;
+    transform: none !important;
+    perspective: none !important;
+  }
+  .character-art {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+    object-position: center bottom !important;
+    transform: none !important;
+  }
+
+  /* Combat Section: contain art inside container */
+  .combat-visual {
+    overflow: hidden !important;
+  }
+  .combat-art {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    transform: none !important;
+  }
+
+  /* Sacred Realms District Cards: vertical card pictures stay inside their cards with no scaling overflow */
+  .district-card {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+  .district-card img {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    object-fit: cover !important;
+    transform: none !important;
+  }
+
+  /* End Section: keep background stone inside container */
+  .end-stone {
+    transform: none !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    object-fit: cover !important;
+  }
 }
 
 </style>
