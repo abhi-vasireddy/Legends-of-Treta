@@ -89,14 +89,10 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
-  try {
-    const list = await getJobApplications();
-    return NextResponse.json({ success: true, count: list.length, applications: list });
-  } catch (error: any) {
-    console.error("Firebase get applications error:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to retrieve applications." },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json(
+    {
+      error: "Direct access disabled. Please access candidate responses via the secure portal (/portal).",
+    },
+    { status: 403 }
+  );
 }

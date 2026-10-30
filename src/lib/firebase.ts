@@ -2,6 +2,8 @@ import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
 import {
   getFirestore,
   collection,
+  doc,
+  updateDoc,
   addDoc,
   getDocs,
   query,
@@ -84,4 +86,16 @@ export async function getJobApplications() {
     id: d.id,
     ...d.data(),
   }));
+}
+
+/**
+ * Update candidate application status in Cloud Firestore
+ */
+export async function updateJobApplicationStatus(docId: string, status: string) {
+  const docRef = doc(db, "applications", docId);
+  await updateDoc(docRef, {
+    status,
+    updatedAt: serverTimestamp(),
+  });
+  return true;
 }
