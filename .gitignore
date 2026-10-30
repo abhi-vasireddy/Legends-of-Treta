@@ -1,0 +1,84 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# Next.js build output
+/.next/
+/out/
+
+# Production build artifacts
+/build
+/dist
+
+# Environment variables files (CRITICAL: NEVER COMMIT SECRETS)
+.env
+.env*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# Debug and task logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Operating System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Local scratch and scraper files
+scratch/
+quality-backup-*/
+payload0.bin
+user_audio.webm
+kasane_site.html
+kasane_exact_source.html
+kasane_dom_structure.html
+kasane_record.json
+kasane.css
+kasane.js
+kasane_style_1.css
+analyze_kasane.js
+apply_user_updates.js
+build_ramayana_job_site.js
+check_main.js
+clean_dom.js
+download_kasane.js
+extract_css.js
+extract_text.js
+fetch_kasane_project.js
+find_assets.js
+find_chunks.js
+find_subdomain.js
+find_urls.js
+inspect_*.js
+replace_end_section.js
+search_terms.js
+*C:\\*
+"C:*"
+C:*
+
+

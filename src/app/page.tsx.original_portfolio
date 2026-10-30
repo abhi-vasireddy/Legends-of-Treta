@@ -1,0 +1,52 @@
+import Nav from "@/components/Nav";
+import Hero from "@/components/Hero";
+import Marquee from "@/components/Marquee";
+import ScrollPassage from "@/components/scroll/ScrollPassage";
+import Epic from "@/components/Epic";
+import Realms from "@/components/Realms";
+import TretaJobBoard from "@/components/careers/TretaJobBoard";
+import Mantras from "@/components/Mantras";
+import CallCTA from "@/components/CallCTA";
+import Footer from "@/components/Footer";
+import SmoothScroll from "@/components/scroll/SmoothScroll";
+import ScrollHUD from "@/components/scroll/ScrollHUD";
+import EmberAtmosphereCanvas from "@/components/scroll/EmberAtmosphereCanvas";
+
+export const metadata = {
+  title: "LEGENDS OF TRETA — Herinova Game Studios presents | Campus Recruitment Drive (MRIIRS & MRU)",
+  description:
+    "Official website and campus recruitment portal for LEGENDS OF TRETA — Herinova Game Studios presents. Developing 'Legends of Treta' - Character 02: Parashurama. 7 elite roles in C#, Fullstack, Script Writing, 3D Art & Cinematic Design.",
+};
+
+export default function HomePage() {
+  return (
+    <SmoothScroll>
+      <EmberAtmosphereCanvas />
+      <ScrollHUD />
+      <Nav />
+            <main className="relative bg-obsidian">
+        <Hero />
+        <Marquee />
+        <div id="jobs">
+          <TretaJobBoard />
+        </div>
+        <div id="traverse">
+          <ScrollPassage />
+        </div>
+        <div id="character">
+          <Epic />
+        </div>
+        <div id="realms">
+          <Realms />
+        </div>
+        <div id="astras">
+          <Mantras />
+        </div>
+        <div id="recruitment">
+          <CallCTA />
+        </div>
+      </main>
+      <Footer />
+    </SmoothScroll>
+  );
+}
