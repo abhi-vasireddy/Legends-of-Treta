@@ -165,6 +165,21 @@ export default function TretaJobBoard() {
     return () => window.removeEventListener("open-job-apply", handleGlobalApply);
   }, []);
 
+  // Lock background scroll when application modal is open
+  useEffect(() => {
+    if (activeJobModal) {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    };
+  }, [activeJobModal]);
+
   const filteredRoles =
     selectedCategory === "All"
       ? ROLES
@@ -416,12 +431,20 @@ export default function TretaJobBoard() {
       {/* Application / Registration Modal Dialog */}
       <AnimatePresence>
         {activeJobModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian/85 backdrop-blur-md">
+          <div
+            data-lenis-prevent
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setActiveJobModal(null);
+            }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian/85 backdrop-blur-md overflow-y-auto overscroll-contain"
+          >
             <motion.div
+              data-lenis-prevent
+              onWheel={(e) => e.stopPropagation()}
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-xl rounded-2xl border border-gold/40 bg-bark2 p-6 sm:p-8 shadow-[0_25px_80px_rgba(0,0,0,0.9)] max-h-[90vh] overflow-y-auto"
+              className="relative w-full max-w-xl rounded-2xl border border-gold/40 bg-bark2 p-6 sm:p-8 shadow-[0_25px_80px_rgba(0,0,0,0.9)] max-h-[88vh] overflow-y-auto overscroll-contain"
             >
               <button
                 onClick={() => setActiveJobModal(null)}

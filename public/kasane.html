@@ -1659,8 +1659,36 @@ THE SOFTWARE.
 </section>
 
 <!-- Apply Modal Dialog -->
-<div id="apply-modal" style="display:none;position:fixed;inset:0;background:rgba(5,8,6,0.88);backdrop-filter:blur(10px);z-index:9999;align-items:center;justify-content:center;padding:20px;">
-  <div style="background:#111612;border:1px solid rgba(212,175,55,0.4);box-shadow:0 25px 80px rgba(0,0,0,0.9);border-radius:16px;max-width:540px;width:100%;padding:32px;position:relative;color:#f7eedb;font-family:sans-serif;max-height:90vh;overflow-y:auto;">
+<style id="apply-modal-scroll-fix">
+body.modal-open, html.modal-open {
+  overflow: hidden !important;
+  touch-action: none;
+}
+#apply-modal {
+  overscroll-behavior: contain !important;
+}
+#apply-modal-box {
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+#apply-modal-box::-webkit-scrollbar {
+  width: 6px;
+}
+#apply-modal-box::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+}
+#apply-modal-box::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.45);
+  border-radius: 4px;
+}
+#apply-modal-box::-webkit-scrollbar-thumb:hover {
+  background: #ffd700;
+}
+</style>
+
+<div id="apply-modal" data-lenis-prevent onclick="if(event.target===this)closeApplyModal()" style="display:none;position:fixed;inset:0;background:rgba(5,8,6,0.88);backdrop-filter:blur(10px);z-index:9999;align-items:center;justify-content:center;padding:20px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;">
+  <div id="apply-modal-box" data-lenis-prevent style="background:#111612;border:1px solid rgba(212,175,55,0.4);box-shadow:0 25px 80px rgba(0,0,0,0.9);border-radius:16px;max-width:540px;width:100%;padding:32px;position:relative;color:#f7eedb;font-family:sans-serif;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;">
     <button onclick="closeApplyModal()" style="position:absolute;top:18px;right:18px;background:none;border:none;color:#8f9e95;font-size:24px;cursor:pointer;line-height:1;">&times;</button>
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
       <span style="font-family:monospace;font-size:10px;color:#ffd700;letter-spacing:0.2em;text-transform:uppercase;">HERINOVA GAME STUDIOS // RECRUITMENT</span>
@@ -1760,8 +1788,21 @@ function openApplyModal(roleName) {
     }
   }
   handleUniversityChange();
+
+  // Prevent background website from scrolling
+  document.body.classList.add('modal-open');
+  document.documentElement.classList.add('modal-open');
+  document.body.style.overflow = 'hidden';
+  if (window.kasaneSmooth && typeof window.kasaneSmooth.stop === 'function') {
+    window.kasaneSmooth.stop();
+  }
+
   const modal = document.getElementById('apply-modal');
-  if (modal) modal.style.display = 'flex';
+  if (modal) {
+    modal.style.display = 'flex';
+    const box = document.getElementById('apply-modal-box');
+    if (box) box.scrollTop = 0;
+  }
 }
 
 function handleUniversityChange() {
@@ -1790,9 +1831,41 @@ document.addEventListener('DOMContentLoaded', function() {
     uniSelect.addEventListener('change', handleUniversityChange);
     uniSelect.addEventListener('input', handleUniversityChange);
   }
+
+  // Ensure wheel/touch on modal dialog card scrolls the form without bubbling to window
+  const applyModal = document.getElementById('apply-modal');
+  const modalBox = document.getElementById('apply-modal-box');
+
+  if (applyModal) {
+    applyModal.addEventListener('wheel', function(e) {
+      e.stopPropagation();
+    }, { passive: true });
+
+    applyModal.addEventListener('touchmove', function(e) {
+      if (e.target.closest('#apply-modal-box')) {
+        e.stopPropagation();
+      } else {
+        e.preventDefault();
+      }
+    }, { passive: false });
+  }
+
+  if (modalBox) {
+    modalBox.addEventListener('wheel', function(e) {
+      e.stopPropagation();
+    }, { passive: true });
+  }
 });
 
 function closeApplyModal() {
+  // Re-enable background website scrolling
+  document.body.classList.remove('modal-open');
+  document.documentElement.classList.remove('modal-open');
+  document.body.style.overflow = '';
+  if (window.kasaneSmooth && typeof window.kasaneSmooth.start === 'function') {
+    window.kasaneSmooth.start();
+  }
+
   const modal = document.getElementById('apply-modal');
   if (modal) modal.style.display = 'none';
   const success = document.getElementById('modal-success');
@@ -2007,7 +2080,13 @@ html.lenis,html.lenis body{height:auto}
   const enabled=!preference.matches&&!document.documentElement.classList.contains('reduced');
   if(!enabled){cancelAnimationFrame(frame);frame=0;smooth?.destroy();smooth=null;return;}
   if(smooth||!window.Lenis)return;
-  smooth=new Lenis({lerp:.12,smoothWheel:true,syncTouch:false,prevent:node=>!!node.closest('dialog,[data-lenis-prevent]')});
+  smooth=new Lenis({
+    lerp:.12,
+    smoothWheel:true,
+    syncTouch:false,
+    prevent:node=>!!node.closest('dialog,[data-lenis-prevent],#apply-modal,#apply-modal-box')
+  });
+  window.kasaneSmooth = smooth;
   const tick=time=>{smooth.raf(time);frame=requestAnimationFrame(tick)};
   frame=requestAnimationFrame(tick);
  }
